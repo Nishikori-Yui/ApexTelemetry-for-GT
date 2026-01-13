@@ -1,0 +1,264 @@
+:root {
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  color: #0c1a24;
+  background-color: #f5f3ee;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at 10% 10%, #e4f4ff, transparent 45%),
+    radial-gradient(circle at 90% 0%, #ffeecf, transparent 40%),
+    linear-gradient(180deg, #f5f3ee 0%, #edf4f8 100%);
+}
+
+#root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 40px;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: #3c5263;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0c1a24;
+  color: #f8fbff;
+  padding: 12px 18px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+}
+
+.status strong {
+  font-size: 14px;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 30px rgba(12, 26, 36, 0.12);
+  border: 1px solid rgba(12, 26, 36, 0.08);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  border-bottom: 1px solid rgba(12, 26, 36, 0.08);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.panel-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mono {
+  font-family: 'SFMono-Regular', 'Fira Code', monospace;
+  color: #3d5266;
+  font-size: 12px;
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kv {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.ps5-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ps5-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #4a5e6e;
+}
+
+.ps5-form input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(12, 26, 36, 0.15);
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.ps5-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ps5-actions button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #0c1a24;
+  color: #f8fbff;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.ps5-actions button.ghost {
+  background: transparent;
+  color: #0c1a24;
+  border: 1px solid rgba(12, 26, 36, 0.2);
+}
+
+.gauges {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.gauge {
+  background: #f5f8fb;
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(12, 26, 36, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gauge-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.gauge-header strong {
+  font-size: 16px;
+}
+
+.gauge-header em {
+  font-style: normal;
+  color: #4f6576;
+  font-size: 12px;
+}
+
+.gauge-bar {
+  height: 6px;
+  background: #d9e4ea;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0b5fff 0%, #00c2ff 100%);
+}
+
+.gear {
+  align-items: center;
+  text-align: center;
+}
+
+.gear-value {
+  font-size: 28px;
+}
+
+.gear-pill {
+  margin-top: auto;
+  padding: 6px 12px;
+  background: #0c1a24;
+  color: #f8fbff;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.chart {
+  justify-content: center;
+}
+
+.race-mode {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: #0c1a24;
+  color: #f8fbff;
+}
+
+.race-mode.not-in-race {
+  background: #dfe6eb;
+  color: #475b6a;
+}
+
+.race-mode.paused {
+  background: #ffe7c2;
+  color: #7a4d00;
+}
+
+.race-mode.in-race {
+  background: #0b5fff;
+  color: #f8fbff;
+}
+
+@media (max-width: 960px) {
+  .gauges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status {
+    width: fit-content;
+  }
+}
