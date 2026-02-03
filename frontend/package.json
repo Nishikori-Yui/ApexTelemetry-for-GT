@@ -1,5 +1,6 @@
 {
-  "name": "frontend",
+  "name": "apextelemetry-for-gt-frontend",
+  "description": "ApexTelemetry for GT web UI (Gran Turismo 7 telemetry)",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,8 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "i18next": "^23.16.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-i18next": "^13.5.0",
     "uplot": "^1.6.31",
     "uplot-react": "^1.0.3"
   },

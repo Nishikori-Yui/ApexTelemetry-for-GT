@@ -1,4 +1,4 @@
-# GT7 LapLab
+# ApexTelemetry for GT
 
 [![Rust](https://img.shields.io/badge/Rust-1.0%2B-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![Tokio](https://img.shields.io/badge/Tokio-1.x-3F3F3F?logo=tokio&logoColor=white)](https://tokio.rs/)
@@ -9,7 +9,7 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-面向 Gran Turismo 7 的研究级遥测与圈速分析平台。
+ApexTelemetry for GT 是面向 Gran Turismo 7 的研究级遥测与圈速分析平台。
 
 ## 技术栈
 - 后端：Rust、tokio、axum、serde、salsa20（解密）、WebSocket
@@ -71,6 +71,11 @@ npm run dev
 - HTTP/WS: `127.0.0.1:10086`
 - 健康检查: `GET /health`
 - WebSocket: `GET /ws`
+- Debug 快照: `GET /debug/telemetry`
+- 元数据: `GET /meta/current`, `GET /meta/car/{id}`, `GET /meta/track/{id}`
+- 赛道几何:
+  - `GET /meta/track/{id}/geometry`（文件存在性）
+  - `GET /meta/track/{id}/geometry/svg`（归一化 SVG 路径）
 
 ## 环境变量
 默认值见 `.env.example`。
@@ -129,7 +134,7 @@ npm run dev
     ```
 
 开发代理说明：
-- 前端开发时，`/config/*` 会由 Vite 代理到 `http://127.0.0.1:10086`。
+- 前端开发时，`/config/*`、`/debug/*`、`/meta/*` 会由 Vite 代理到 `http://127.0.0.1:10086`。
  
 语义说明：
 - 手动 `POST /config/udp` 且 `ps5_ip` 非空时，会取消正在进行的自动检测并避免被覆盖。
@@ -148,6 +153,16 @@ npm run dev
 - `samples_window` 仅在 `IN_RACE` 时发送。
 - 进入 `IN_RACE` 会清空样本环形缓冲，让图表从新比赛开始。
 - 离开 `IN_RACE` 后样本窗口冻结，不会自动清空。
+
+## 赛道几何（自带数据）
+赛道几何来自 `GT7Tracks` dumps，**不**提交到本仓库。
+- 期望路径：`data/vendor/GT7Tracks/dumps/<track_id>.csv`
+- 后端接口 `GET /meta/track/{id}/geometry/svg` 提供归一化 SVG 路径。
+- 如果 dumps 目录缺失，则返回 `exists=false`。
+
+## Debug 遥测快照
+- `GET /debug/telemetry` 只返回**已解析**字段（不记录原始包日志）。
+- 加密/解密原始十六进制仅通过 HTTP 响应提供，便于本地调试。
 
 ## 验证（E2E）
 可重复检查清单：

@@ -1,4 +1,4 @@
-# GT7 LapLab
+# ApexTelemetry for GT
 
 [![Rust](https://img.shields.io/badge/Rust-1.0%2B-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![Tokio](https://img.shields.io/badge/Tokio-1.x-3F3F3F?logo=tokio&logoColor=white)](https://tokio.rs/)
@@ -9,7 +9,7 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-Research-grade telemetry and lap-analysis platform for Gran Turismo 7.
+ApexTelemetry for GT is a research-grade telemetry and lap-analysis platform for Gran Turismo 7.
 
 ## Tech Stack
 - Backend: Rust, tokio, axum, serde, salsa20 (decryption), WebSocket
@@ -71,6 +71,11 @@ npm run dev
 - HTTP/WS: `127.0.0.1:10086`
 - Health: `GET /health`
 - WebSocket: `GET /ws`
+- Debug snapshot: `GET /debug/telemetry`
+- Metadata: `GET /meta/current`, `GET /meta/car/{id}`, `GET /meta/track/{id}`
+- Track geometry:
+  - `GET /meta/track/{id}/geometry` (file presence)
+  - `GET /meta/track/{id}/geometry/svg` (normalized SVG path)
 
 ## Environment Variables
 See `.env.example` for defaults.
@@ -129,7 +134,7 @@ Backend endpoints (HTTP on `127.0.0.1:10086`):
     ```
 
 Dev proxy note:
-- During frontend dev, `/config/*` is proxied to `http://127.0.0.1:10086` by Vite.
+- During frontend dev, `/config/*`, `/debug/*`, and `/meta/*` are proxied to `http://127.0.0.1:10086` by Vite.
  
 Semantics:
 - Manual `POST /config/udp` with a non-null `ps5_ip` cancels any pending auto-detect and prevents overwrite.
@@ -148,6 +153,16 @@ Semantics:
 - `samples_window` is emitted only when the session state is `IN_RACE`.
 - Entering `IN_RACE` clears the samples ring buffer so charts start fresh for each race.
 - When leaving `IN_RACE`, samples freeze at their last window; no auto-clear.
+
+## Track Geometry (Bring Your Own Data)
+Track geometry is loaded from `GT7Tracks` dumps and is **not** committed to this repo.
+- Expected path: `data/vendor/GT7Tracks/dumps/<track_id>.csv`
+- The backend exposes `GET /meta/track/{id}/geometry/svg` for a normalized SVG path.
+- If the dumps directory is missing, geometry responses return `exists=false`.
+
+## Debug Telemetry Snapshot
+- `GET /debug/telemetry` returns **parsed** fields only (no raw UDP logs).
+- Raw encrypted/decrypted hex is exposed only in the HTTP response for local inspection.
 
 ## Verification (E2E)
 Checklist (repeatable):
