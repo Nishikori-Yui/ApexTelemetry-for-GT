@@ -1,5 +1,10 @@
 local/
 backend/target/
+backend/package-lock.json
 frontend/node_modules/
 frontend/dist/
+data/
 .env
+.agent/
+.shared/
+.DS_Store

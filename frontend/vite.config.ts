@@ -10,6 +10,18 @@ export default defineConfig({
         target: 'http://127.0.0.1:10086',
         changeOrigin: true,
       },
+      '/debug': {
+        target: 'http://127.0.0.1:10086',
+        changeOrigin: true,
+      },
+      '/meta': {
+        target: 'http://127.0.0.1:10086',
+        changeOrigin: true,
+      },
+      '/demo': {
+        target: 'http://127.0.0.1:10086',
+        changeOrigin: true,
+      },
     },
   },
 })
