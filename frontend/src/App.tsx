@@ -30,6 +30,80 @@ import type {
 import { createNumberFormats } from './utils/format'
 import { getStoredUnit, UNIT_KEYS } from './utils/units'
 
+type DemoFrame = {
+  t_ms: number
+  state: TelemetryState
+}
+
+type DemoManifest = {
+  meta?: {
+    car?: MetaCarResponse
+    track?: MetaTrackResponse
+    geometry?: TrackGeometrySvg
+    debug?: DebugTelemetryResponse
+  }
+  frames: DemoFrame[]
+}
+
+const emptyDebugData = (timestampMs: number): DebugTelemetryResponse => ({
+  timestamp_ms: timestampMs,
+  session: {},
+  powertrain: {},
+  fluids: {},
+  tyres: {},
+  wheels: {},
+  chassis: {},
+  gears: {},
+  dynamics: {},
+  flags: {},
+  raw: {},
+})
+
+const buildDebugFromState = (state: TelemetryState, timestampMs: number): DebugTelemetryResponse => ({
+  timestamp_ms: timestampMs,
+  session: {
+    in_race: state.in_race ?? null,
+    is_paused: state.is_paused ?? null,
+    packet_id: state.packet_id ?? null,
+    time_on_track_ms: state.time_on_track_ms ?? null,
+    current_lap: state.current_lap ?? null,
+    total_laps: state.total_laps ?? null,
+    best_lap_ms: state.best_lap_ms ?? null,
+    last_lap_ms: state.last_lap_ms ?? null,
+    current_position: state.current_position ?? null,
+    total_positions: state.total_positions ?? null,
+    car_id: state.car_id ?? null,
+    track_id: state.track_id ?? null,
+  },
+  powertrain: {
+    speed_kph: state.speed_kph ?? null,
+    rpm: state.rpm ?? null,
+    gear: state.gear ?? null,
+    throttle: state.throttle ?? null,
+    brake: state.brake ?? null,
+    boost_kpa: state.boost_kpa ?? null,
+  },
+  fluids: {
+    fuel_l: state.fuel_l ?? null,
+    fuel_capacity_l: state.fuel_capacity_l ?? null,
+  },
+  tyres: {},
+  wheels: {},
+  chassis: {},
+  gears: {},
+  dynamics: {
+    pos_x: state.pos_x ?? null,
+    pos_y: state.pos_y ?? null,
+    pos_z: state.pos_z ?? null,
+    vel_x: state.vel_x ?? null,
+    vel_y: state.vel_y ?? null,
+    vel_z: state.vel_z ?? null,
+    rotation_yaw: state.rotation_yaw ?? null,
+  },
+  flags: {},
+  raw: {},
+})
+
 function App() {
   const { t, i18n } = useTranslation()
   const [activeTab, setActiveTab] = useState<TabKey>('race')
@@ -65,6 +139,12 @@ function App() {
   const [trackGeometry, setTrackGeometry] = useState<TrackGeometrySvg | null>(null)
   const [sessionKey, setSessionKey] = useState(0)
   const prevLastLapMs = useRef<number | null | undefined>(undefined)
+  const demoFramesRef = useRef<DemoFrame[]>([])
+  const demoIndexRef = useRef(0)
+  const demoStartRef = useRef<number | null>(null)
+  const demoDurationRef = useRef(0)
+  const demoElapsedRef = useRef(0)
+  const demoTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     const currentLastLap = telemetry?.last_lap_ms
@@ -111,7 +191,66 @@ function App() {
   const [fuelUnit, setFuelUnit] = useState<FuelUnit>(() =>
     getStoredUnit(UNIT_KEYS.fuel, ['l', 'gal'], 'l'),
   )
+  const isPagesDemo =
+    import.meta.env.VITE_PAGES_DEMO === 'true' ||
+    (typeof window !== 'undefined' && window.location.hostname.endsWith('github.io'))
+  const demoManifestUrl = `${import.meta.env.BASE_URL}demo/demo_race.json`
   const wsUrl = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:10086/ws'
+  const stopDemoPlayback = useCallback(() => {
+    if (demoTimerRef.current !== null && typeof window !== 'undefined') {
+      window.cancelAnimationFrame(demoTimerRef.current)
+      demoTimerRef.current = null
+    }
+  }, [])
+
+  const startDemoPlayback = useCallback(
+    (frames: DemoFrame[]) => {
+      if (typeof window === 'undefined' || frames.length === 0) {
+        return
+      }
+      stopDemoPlayback()
+      demoFramesRef.current = frames
+      demoIndexRef.current = 0
+      demoElapsedRef.current = 0
+      demoStartRef.current = window.performance.now()
+      demoDurationRef.current = frames[frames.length - 1]?.t_ms ?? 0
+
+      const tick = () => {
+        if (!demoActiveRef.current) {
+          stopDemoPlayback()
+          return
+        }
+        const duration = demoDurationRef.current || 1
+        const now = window.performance.now()
+        const start = demoStartRef.current ?? now
+        const elapsed = (now - start) % duration
+
+        if (elapsed < demoElapsedRef.current) {
+          demoIndexRef.current = 0
+        }
+        demoElapsedRef.current = elapsed
+
+        const framesRef = demoFramesRef.current
+        let idx = demoIndexRef.current
+        while (idx + 1 < framesRef.length && framesRef[idx + 1].t_ms <= elapsed) {
+          idx += 1
+        }
+        demoIndexRef.current = idx
+
+        const frame = framesRef[idx]
+        if (frame) {
+          setTelemetry(frame.state)
+          const nowTs = Date.now()
+          setLastTelemetryAt(nowTs)
+          setDebugData(buildDebugFromState(frame.state, nowTs))
+        }
+        demoTimerRef.current = window.requestAnimationFrame(tick)
+      }
+
+      demoTimerRef.current = window.requestAnimationFrame(tick)
+    },
+    [stopDemoPlayback],
+  )
   const pushLog = useCallback((level: UiLog['level'], message: string) => {
     setUiLogs((prev) => {
       const next = [...prev, { at: Date.now(), level, message }]
@@ -137,6 +276,10 @@ function App() {
   ] satisfies Array<{ key: TabKey; label: string }>
 
   useEffect(() => {
+    if (isPagesDemo) {
+      setStatus('demo')
+      return
+    }
     const socket = new WebSocket(wsUrl)
     setStatus('connecting')
 
@@ -241,9 +384,76 @@ function App() {
     return () => {
       socket.close()
     }
-  }, [wsUrl, pushLog])
+  }, [wsUrl, pushLog, isPagesDemo])
+
+  useEffect(() => {
+    if (!isPagesDemo) {
+      return
+    }
+    let cancelled = false
+    const load = async () => {
+      setDemoPending(true)
+      setDemoError(null)
+      try {
+        const res = await fetch(demoManifestUrl)
+        if (!res.ok) {
+          throw new Error(`demo manifest ${res.status}`)
+        }
+        const data = (await res.json()) as DemoManifest
+        if (cancelled) {
+          return
+        }
+        const frames = Array.isArray(data.frames) ? data.frames : []
+        demoFramesRef.current = frames
+        demoDurationRef.current = frames.length ? frames[frames.length - 1].t_ms : 0
+        demoIndexRef.current = 0
+        demoElapsedRef.current = 0
+        demoStartRef.current = typeof window !== 'undefined' ? window.performance.now() : null
+
+        if (data.meta?.car) {
+          carMetaCache.current.set(data.meta.car.id, data.meta.car)
+          setMetaCar(data.meta.car)
+        }
+        if (data.meta?.track) {
+          trackMetaCache.current.set(data.meta.track.id, data.meta.track)
+          setMetaTrack(data.meta.track)
+        }
+        if (data.meta?.geometry) {
+          trackGeometryCache.current.set(data.meta.geometry.id, data.meta.geometry)
+          setTrackGeometry(data.meta.geometry)
+        }
+        if (data.meta?.debug) {
+          setDebugData(data.meta.debug)
+        } else {
+          setDebugData(emptyDebugData(Date.now()))
+        }
+
+        setDemoActive(true)
+        setDemoPath(demoManifestUrl)
+        pushLog('info', `demo manifest loaded frames=${frames.length}`)
+        startDemoPlayback(frames)
+      } catch (err) {
+        if (!cancelled) {
+          setDemoError(t('demo.errorStart'))
+          pushLog('error', 'demo manifest load failed')
+        }
+      } finally {
+        if (!cancelled) {
+          setDemoPending(false)
+        }
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+      stopDemoPlayback()
+    }
+  }, [demoManifestUrl, isPagesDemo, pushLog, startDemoPlayback, stopDemoPlayback, t])
 
   const fetchConfig = async () => {
+    if (isPagesDemo) {
+      return null
+    }
     try {
       const res = await fetch('/config/udp')
       const data = (await res.json()) as UdpConfig
@@ -258,6 +468,9 @@ function App() {
   }
 
   const startAutoDetect = async () => {
+    if (isPagesDemo) {
+      return
+    }
     setDetectStatus('pending')
     setDetectIp(null)
     const res = await fetch('/config/udp/auto-detect', {
@@ -273,6 +486,9 @@ function App() {
   }
 
   const fetchDemoStatus = async () => {
+    if (isPagesDemo) {
+      return
+    }
     try {
       const res = await fetch('/demo/status')
       if (!res.ok) {
@@ -290,6 +506,21 @@ function App() {
   }
 
   const toggleDemo = async () => {
+    if (isPagesDemo) {
+      if (demoActive) {
+        setDemoActive(false)
+        stopDemoPlayback()
+      } else {
+        setDemoActive(true)
+        if (demoFramesRef.current.length > 0) {
+          demoStartRef.current = typeof window !== 'undefined' ? window.performance.now() : null
+          demoElapsedRef.current = 0
+          demoIndexRef.current = 0
+          startDemoPlayback(demoFramesRef.current)
+        }
+      }
+      return
+    }
     if (demoPending) {
       return
     }
@@ -316,26 +547,42 @@ function App() {
 
   useEffect(() => {
     const load = async () => {
+      if (isPagesDemo) {
+        return
+      }
       await fetchConfig()
       await startAutoDetect()
     }
     load()
-  }, [])
+  }, [isPagesDemo])
 
   useEffect(() => {
-    fetchDemoStatus()
-  }, [])
+    if (!isPagesDemo) {
+      fetchDemoStatus()
+    }
+  }, [isPagesDemo])
 
   useEffect(() => {
-    if (activeTab === 'settings') {
+    if (activeTab === 'settings' && !isPagesDemo) {
       fetchConfig()
       fetchDemoStatus()
     }
-  }, [activeTab])
+  }, [activeTab, isPagesDemo])
 
   const trackId = telemetry.track_id
   useEffect(() => {
     if (activeTab !== 'race') {
+      return
+    }
+    if (isPagesDemo) {
+      if (trackId === undefined) {
+        setTrackGeometry(null)
+        return
+      }
+      const cached = trackGeometryCache.current.get(trackId)
+      if (cached) {
+        setTrackGeometry(cached)
+      }
       return
     }
     if (trackId === undefined) {
@@ -386,10 +633,10 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [activeTab, trackId, metaTrack?.base_id])
+  }, [activeTab, trackId, metaTrack?.base_id, isPagesDemo])
 
   useEffect(() => {
-    if (activeTab !== 'debug') {
+    if (activeTab !== 'debug' || isPagesDemo) {
       return
     }
     let cancelled = false
@@ -415,10 +662,13 @@ function App() {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [activeTab])
+  }, [activeTab, isPagesDemo])
 
   useEffect(() => {
     if (detectId === null) {
+      return
+    }
+    if (isPagesDemo) {
       return
     }
     let cancelled = false
@@ -448,7 +698,7 @@ function App() {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [detectId])
+  }, [detectId, isPagesDemo])
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -466,6 +716,9 @@ function App() {
     const cached = carMetaCache.current.get(carId)
     if (cached) {
       setMetaCar(cached)
+      return
+    }
+    if (isPagesDemo) {
       return
     }
     let cancelled = false
@@ -490,7 +743,7 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [carId])
+  }, [carId, isPagesDemo])
 
   useEffect(() => {
     if (trackId === undefined) {
@@ -500,6 +753,9 @@ function App() {
     const cached = trackMetaCache.current.get(trackId)
     if (cached) {
       setMetaTrack(cached)
+      return
+    }
+    if (isPagesDemo) {
       return
     }
     let cancelled = false
@@ -524,7 +780,7 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [trackId])
+  }, [trackId, isPagesDemo])
 
   const applyLanguage = (value: string) => {
     const normalized = normalizeLang(value)
@@ -573,6 +829,9 @@ function App() {
   }
 
   const applyManualBind = async () => {
+    if (isPagesDemo) {
+      return
+    }
     if (!udpConfig) {
       return
     }

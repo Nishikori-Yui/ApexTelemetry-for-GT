@@ -67,6 +67,12 @@ npm install
 npm run dev
 ```
 
+## GitHub Pages 示例
+仓库包含一个 **纯前端** 的 GitHub Pages 演示页面，使用打包在前端的示例遥测数据。
+- Demo 数据：`frontend/public/demo/demo_race.json`
+- 构建模式：`npm run build -- --mode pages` 并设置 `VITE_PAGES_DEMO=true`
+- 页面地址：`https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
+
 ## 端口与接口
 - HTTP/WS: `127.0.0.1:10086`
 - 健康检查: `GET /health`

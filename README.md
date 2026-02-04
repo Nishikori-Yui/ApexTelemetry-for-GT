@@ -67,6 +67,12 @@ npm install
 npm run dev
 ```
 
+## GitHub Pages Demo
+The repo includes a GitHub Pages demo that runs **entirely in the browser** using a bundled demo telemetry stream.
+- Demo data: `frontend/public/demo/demo_race.json`
+- Build mode: `npm run build -- --mode pages` with `VITE_PAGES_DEMO=true`
+- Pages URL: `https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
+
 ## Ports and Endpoints
 - HTTP/WS: `127.0.0.1:10086`
 - Health: `GET /health`
@@ -148,7 +154,7 @@ Semantics:
 - When `ps5_ip` is known, heartbeat switches to **unicast** immediately.
 - Troubleshooting: if `255.255.255.255` broadcast is ineffective, try your subnet broadcast (e.g. `192.168.50.255`) in network tools.
 
-## Session & Race State
+　## Session & Race State
 - `state_update` continues to stream even when not racing (includes `in_race` / `is_paused`).
 - `samples_window` is emitted only when the session state is `IN_RACE`.
 - Entering `IN_RACE` clears the samples ring buffer so charts start fresh for each race.
