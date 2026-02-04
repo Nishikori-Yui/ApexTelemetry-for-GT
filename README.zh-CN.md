@@ -74,6 +74,11 @@ npm run dev
 - 构建模式：`npm run build -- --mode pages` 并设置 `VITE_PAGES_DEMO=true`（需要 `wasm-pack`）
 - 页面地址：`https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
+## 数据来源
+- `data/vendor/GT7Tracks` 来自 GT7Tracks 的赛道采集工具（详情见 `data/vendor/GT7Tracks/README.md`）。
+- 赛道 ID/名称参考该 README 中提到的 `ddm999/gt7info` 项目的 `course.csv` 数据集。
+- 赛道采集流程的讨论来源也在该 README 引用的 GTPlanet 论坛帖子中说明。
+
 ## 端口与接口
 - HTTP/WS: `127.0.0.1:10086`
 - 健康检查: `GET /health`

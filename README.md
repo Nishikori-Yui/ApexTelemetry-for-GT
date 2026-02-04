@@ -74,6 +74,11 @@ The repo includes a GitHub Pages demo that runs **entirely in the browser** usin
 - Build mode: `npm run build -- --mode pages` with `VITE_PAGES_DEMO=true` (requires `wasm-pack`)
 - Pages URL: `https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
+## Data Sources
+- `data/vendor/GT7Tracks` is sourced from the GT7 track capture tool by the GT7Tracks project (see `data/vendor/GT7Tracks/README.md`).
+- Track IDs/names reference the `course.csv` dataset from the `ddm999/gt7info` project as noted in that README.
+- Additional discussion of the track capture process is referenced from the GTPlanet forum thread cited in that README.
+
 ## Ports and Endpoints
 - HTTP/WS: `127.0.0.1:10086`
 - Health: `GET /health`
