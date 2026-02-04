@@ -14,7 +14,9 @@ use tokio::time::Instant;
 use crate::constants::{RAW_PACKET_HISTORY, SAMPLE_BUFFER_CAP};
 use crate::buffers::RingBuffer;
 use crate::meta::MetadataStore;
-use crate::model::{Sample, State as TelemetryState};
+use crate::model::Sample;
+use telemetry_core::session::SessionTracker;
+pub use telemetry_core::session::SessionState;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -34,7 +36,7 @@ pub struct AppState {
 }
 
 pub struct TelemetryStore {
-    pub state: TelemetryState,
+    pub session: SessionTracker,
     pub samples: RingBuffer<Sample>,
     pub last_packet_id: Option<i32>,
     pub last_source_timestamp_ms: Option<u64>,
@@ -43,23 +45,12 @@ pub struct TelemetryStore {
     pub last_payload_len: Option<usize>,
     pub last_source_ip: Option<IpAddr>,
     pub raw_packets: VecDeque<RawPacketSnapshot>,
-    pub session_state: SessionState,
-    pub session_index: u64,
-    pub last_current_lap: Option<i16>,
-    pub last_lap_time_ms_recorded: Option<i32>,
-    pub lap_start_mono_ms: Option<u64>,
-    pub lap_pause_started_ms: Option<u64>,
-    pub lap_pause_accum_ms: u64,
-    pub fuel_pct_at_lap_start: Option<f32>,
-    pub fuel_consume_history: VecDeque<f32>,
-    pub car_id: Option<i32>,
-    pub track_id: Option<i32>,
 }
 
 impl TelemetryStore {
     pub fn new() -> Self {
         Self {
-            state: TelemetryState::default(),
+            session: SessionTracker::new(),
             samples: RingBuffer::new(SAMPLE_BUFFER_CAP),
             last_packet_id: None,
             last_source_timestamp_ms: None,
@@ -68,17 +59,6 @@ impl TelemetryStore {
             last_payload_len: None,
             last_source_ip: None,
             raw_packets: VecDeque::with_capacity(RAW_PACKET_HISTORY),
-            session_state: SessionState::NotInRace,
-            session_index: 0,
-            last_current_lap: None,
-            last_lap_time_ms_recorded: None,
-            lap_start_mono_ms: None,
-            lap_pause_started_ms: None,
-            lap_pause_accum_ms: 0,
-            fuel_pct_at_lap_start: None,
-            fuel_consume_history: VecDeque::with_capacity(3),
-            car_id: None,
-            track_id: None,
         }
     }
 }
@@ -202,11 +182,4 @@ pub enum HeartbeatMode {
     Stop,
     Broadcast,
     Unicast(IpAddr),
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum SessionState {
-    NotInRace,
-    InRace,
-    Paused,
 }

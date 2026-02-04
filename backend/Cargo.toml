@@ -15,5 +15,5 @@ thiserror = "1"
 bytes = "1"
 tokio-util = "0.7"
 futures = "0.3"
-salsa20 = "0.10"
 if-addrs = "0.10"
+telemetry-core = { path = "../telemetry-core" }

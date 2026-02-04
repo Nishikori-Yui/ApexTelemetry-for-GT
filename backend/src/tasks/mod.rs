@@ -31,7 +31,7 @@ pub async fn state_update_task(
         interval.tick().await;
         let (state, source_timestamp_ms) = {
             let store = store.read().await;
-            (store.state.clone(), store.last_source_timestamp_ms)
+            (store.session.state.clone(), store.last_source_timestamp_ms)
         };
 
         if state.is_empty() {
@@ -67,7 +67,7 @@ pub async fn samples_window_task(
         let start_ms = now_ms.saturating_sub(WINDOW_DURATION_MS);
         let samples = {
             let store = store.read().await;
-            if store.session_state != SessionState::InRace {
+            if store.session.session_state != SessionState::InRace {
                 continue;
             }
             if store.samples.len() == 0 {

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './App.css'
+import { decodeDemoBin } from './demo/wasm'
+import type { DemoFrame, DemoMeta } from './demo/types'
 import { normalizeLang } from './i18n'
 import { DebugTab } from './tabs/debug/DebugTab'
 import { DynamicsTab } from './tabs/dynamics/DynamicsTab'
@@ -29,21 +31,6 @@ import type {
 } from './types'
 import { createNumberFormats } from './utils/format'
 import { getStoredUnit, UNIT_KEYS } from './utils/units'
-
-type DemoFrame = {
-  t_ms: number
-  state: TelemetryState
-}
-
-type DemoManifest = {
-  meta?: {
-    car?: MetaCarResponse
-    track?: MetaTrackResponse
-    geometry?: TrackGeometrySvg
-    debug?: DebugTelemetryResponse
-  }
-  frames: DemoFrame[]
-}
 
 const emptyDebugData = (timestampMs: number): DebugTelemetryResponse => ({
   timestamp_ms: timestampMs,
@@ -194,7 +181,8 @@ function App() {
   const isPagesDemo =
     import.meta.env.VITE_PAGES_DEMO === 'true' ||
     (typeof window !== 'undefined' && window.location.hostname.endsWith('github.io'))
-  const demoManifestUrl = `${import.meta.env.BASE_URL}demo/demo_race.json`
+  const demoBinUrl = `${import.meta.env.BASE_URL}demo/demo_race.bin`
+  const demoMetaUrl = `${import.meta.env.BASE_URL}demo/demo_race.meta.json`
   const wsUrl = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:10086/ws'
   const stopDemoPlayback = useCallback(() => {
     if (demoTimerRef.current !== null && typeof window !== 'undefined') {
@@ -395,47 +383,55 @@ function App() {
       setDemoPending(true)
       setDemoError(null)
       try {
-        const res = await fetch(demoManifestUrl)
-        if (!res.ok) {
-          throw new Error(`demo manifest ${res.status}`)
+        const [metaRes, binRes] = await Promise.all([
+          fetch(demoMetaUrl).catch(() => null),
+          fetch(demoBinUrl),
+        ])
+        if (!binRes.ok) {
+          throw new Error(`demo bin ${binRes.status}`)
         }
-        const data = (await res.json()) as DemoManifest
+        const meta = metaRes && metaRes.ok ? ((await metaRes.json()) as DemoMeta) : undefined
+        const binBuffer = await binRes.arrayBuffer()
         if (cancelled) {
           return
         }
-        const frames = Array.isArray(data.frames) ? data.frames : []
+        const frames = await decodeDemoBin(binBuffer, meta?.track?.id ?? null, meta?.car?.id ?? null)
+        if (cancelled) {
+          return
+        }
+
         demoFramesRef.current = frames
         demoDurationRef.current = frames.length ? frames[frames.length - 1].t_ms : 0
         demoIndexRef.current = 0
         demoElapsedRef.current = 0
         demoStartRef.current = typeof window !== 'undefined' ? window.performance.now() : null
 
-        if (data.meta?.car) {
-          carMetaCache.current.set(data.meta.car.id, data.meta.car)
-          setMetaCar(data.meta.car)
+        if (meta?.car) {
+          carMetaCache.current.set(meta.car.id, meta.car)
+          setMetaCar(meta.car)
         }
-        if (data.meta?.track) {
-          trackMetaCache.current.set(data.meta.track.id, data.meta.track)
-          setMetaTrack(data.meta.track)
+        if (meta?.track) {
+          trackMetaCache.current.set(meta.track.id, meta.track)
+          setMetaTrack(meta.track)
         }
-        if (data.meta?.geometry) {
-          trackGeometryCache.current.set(data.meta.geometry.id, data.meta.geometry)
-          setTrackGeometry(data.meta.geometry)
+        if (meta?.geometry) {
+          trackGeometryCache.current.set(meta.geometry.id, meta.geometry)
+          setTrackGeometry(meta.geometry)
         }
-        if (data.meta?.debug) {
-          setDebugData(data.meta.debug)
+        if (meta?.debug) {
+          setDebugData(meta.debug)
         } else {
           setDebugData(emptyDebugData(Date.now()))
         }
 
         setDemoActive(true)
-        setDemoPath(demoManifestUrl)
-        pushLog('info', `demo manifest loaded frames=${frames.length}`)
+        setDemoPath(demoBinUrl)
+        pushLog('info', `demo bin loaded frames=${frames.length}`)
         startDemoPlayback(frames)
       } catch (err) {
         if (!cancelled) {
           setDemoError(t('demo.errorStart'))
-          pushLog('error', 'demo manifest load failed')
+          pushLog('error', 'demo bin load failed')
         }
       } finally {
         if (!cancelled) {
@@ -448,7 +444,16 @@ function App() {
       cancelled = true
       stopDemoPlayback()
     }
-  }, [demoManifestUrl, isPagesDemo, pushLog, startDemoPlayback, stopDemoPlayback, t])
+  }, [
+    demoBinUrl,
+    demoMetaUrl,
+    decodeDemoBin,
+    isPagesDemo,
+    pushLog,
+    startDemoPlayback,
+    stopDemoPlayback,
+    t,
+  ])
 
   const fetchConfig = async () => {
     if (isPagesDemo) {

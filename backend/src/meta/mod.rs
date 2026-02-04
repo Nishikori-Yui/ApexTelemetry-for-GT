@@ -2,10 +2,9 @@
 
 mod detector;
 mod geometry;
-mod packet;
 mod store;
 
 pub use detector::TrackDetector;
 pub use geometry::{TrackBounds, TrackSvg};
-pub use packet::{parse_packet_meta, PacketMeta};
+pub use telemetry_core::packet::{parse_packet_meta, PacketMeta};
 pub use store::{CarMeta, MetadataStore, TrackMeta};

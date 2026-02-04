@@ -1,0 +1,22 @@
+{
+  "car": {
+    "id": 246,
+    "name": "WRX STI Type S '14",
+    "manufacturer": "Subaru"
+  },
+  "track": {
+    "id": 7,
+    "name": "Trial Mountain",
+    "base_id": 7,
+    "layout_number": 1,
+    "is_reverse": false
+  },
+  "geometry": {
+    "id": 7,
+    "exists": true,
+    "view_box": "-240 -200 480 400",
+    "path_d": "M 200 0 A 200 150 0 1 0 -200 0 A 200 150 0 1 0 200 0",
+    "points_count": 200,
+    "simplified": true
+  }
+}

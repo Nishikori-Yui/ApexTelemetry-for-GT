@@ -68,9 +68,10 @@ npm run dev
 ```
 
 ## GitHub Pages 示例
-仓库包含一个 **纯前端** 的 GitHub Pages 演示页面，使用打包在前端的示例遥测数据。
-- Demo 数据：`frontend/public/demo/demo_race.json`
-- 构建模式：`npm run build -- --mode pages` 并设置 `VITE_PAGES_DEMO=true`
+仓库包含一个 **纯前端** 的 GitHub Pages 演示页面，使用 WASM 在浏览器内解码示例遥测数据。
+- Demo 数据：`frontend/public/demo/demo_race.bin`
+- Demo 元数据：`frontend/public/demo/demo_race.meta.json`
+- 构建模式：`npm run build -- --mode pages` 并设置 `VITE_PAGES_DEMO=true`（需要 `wasm-pack`）
 - 页面地址：`https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
 ## 端口与接口

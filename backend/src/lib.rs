@@ -3,13 +3,11 @@
 pub mod app;
 pub mod buffers;
 pub mod constants;
-pub mod crypto;
 pub mod demo;
 pub mod http;
 pub mod meta;
 pub mod model;
 pub mod net;
-pub mod parser;
 pub mod recording;
 pub mod tasks;
 pub mod telemetry;

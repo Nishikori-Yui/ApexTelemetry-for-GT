@@ -68,9 +68,10 @@ npm run dev
 ```
 
 ## GitHub Pages Demo
-The repo includes a GitHub Pages demo that runs **entirely in the browser** using a bundled demo telemetry stream.
-- Demo data: `frontend/public/demo/demo_race.json`
-- Build mode: `npm run build -- --mode pages` with `VITE_PAGES_DEMO=true`
+The repo includes a GitHub Pages demo that runs **entirely in the browser** using a bundled demo telemetry stream decoded via WASM.
+- Demo data: `frontend/public/demo/demo_race.bin`
+- Demo metadata: `frontend/public/demo/demo_race.meta.json`
+- Build mode: `npm run build -- --mode pages` with `VITE_PAGES_DEMO=true` (requires `wasm-pack`)
 - Pages URL: `https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
 ## Ports and Endpoints

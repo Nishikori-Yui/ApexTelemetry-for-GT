@@ -10,12 +10,12 @@ use tokio::time::{self, Instant};
 
 use crate::app::TelemetryStore;
 use crate::constants::{DEMO_DIR, DEMO_FILE};
-use crate::crypto;
 use crate::meta::{self, MetadataStore, PacketMeta, TrackDetector};
 use crate::model::TelemetryFrame;
-use crate::parser;
 use crate::telemetry::apply_frame;
 use crate::utils::monotonic_ms;
+use telemetry_core::crypto;
+use telemetry_core::parser;
 
 pub fn demo_default_path(data_dir: &Path) -> PathBuf {
     data_dir.join(DEMO_DIR).join(DEMO_FILE)
@@ -50,20 +50,9 @@ pub fn resolve_data_dir() -> PathBuf {
 
 pub async fn reset_store_for_demo(store: &Arc<RwLock<TelemetryStore>>) {
     let mut store = store.write().await;
-    store.state = crate::model::State::default();
+    store.session.reset_for_demo();
     store.samples.clear();
-    store.session_state = crate::app::SessionState::NotInRace;
-    store.session_index = store.session_index.saturating_add(1);
     store.last_packet_id = None;
-    store.last_current_lap = None;
-    store.last_lap_time_ms_recorded = None;
-    store.lap_start_mono_ms = None;
-    store.lap_pause_started_ms = None;
-    store.lap_pause_accum_ms = 0;
-    store.fuel_pct_at_lap_start = None;
-    store.fuel_consume_history.clear();
-    store.car_id = None;
-    store.track_id = None;
     store.raw_packets.clear();
     store.last_packet_len = None;
     store.last_payload_len = None;

@@ -367,7 +367,7 @@ async fn get_meta_track_geometry_svg(
 async fn get_meta_current(AxumState(app_state): AxumState<AppState>) -> impl IntoResponse {
     let (car_id, track_id) = {
         let store = app_state.store.read().await;
-        (store.car_id, store.track_id)
+        (store.session.car_id, store.session.track_id)
     };
 
     let (car_name, car_manufacturer) = car_id
@@ -394,7 +394,7 @@ async fn get_meta_current(AxumState(app_state): AxumState<AppState>) -> impl Int
 
 async fn get_debug_telemetry(AxumState(app_state): AxumState<AppState>) -> impl IntoResponse {
     let store = app_state.store.read().await;
-    let state = store.state.clone();
+    let state = store.session.state.clone();
     let raw_latest = store.raw_packets.back();
     let (raw_encrypted_len, raw_decrypted_len, raw_encrypted_hex, raw_decrypted_hex, raw_ip, raw_captured_at) =
         match raw_latest {
@@ -421,8 +421,8 @@ async fn get_debug_telemetry(AxumState(app_state): AxumState<AppState>) -> impl 
             last_lap_ms: state.last_lap_ms,
             current_position: state.current_position,
             total_positions: state.total_positions,
-            car_id: store.car_id,
-            track_id: store.track_id,
+            car_id: store.session.car_id,
+            track_id: store.session.track_id,
         },
         powertrain: DebugPowertrain {
             speed_kph: state.speed_kph,

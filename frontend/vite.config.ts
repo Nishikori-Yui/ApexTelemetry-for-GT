@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   base: mode === 'pages' ? '/ApexTelemetry-for-GT/' : '/',
   plugins: [react()],
+  assetsInclude: ['**/*.wasm'],
   server: {
     proxy: {
       '/config': {

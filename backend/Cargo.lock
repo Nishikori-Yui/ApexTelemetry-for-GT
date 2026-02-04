@@ -20,9 +20,9 @@ dependencies = [
  "csv",
  "futures",
  "if-addrs",
- "salsa20",
  "serde",
  "serde_json",
+ "telemetry-core",
  "thiserror",
  "tokio",
  "tokio-util",
@@ -960,6 +960,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "telemetry-core"
+version = "0.1.0"
+dependencies = [
+ "salsa20",
+ "serde",
 ]
 
 [[package]]

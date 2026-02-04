@@ -1,9 +1,15 @@
 local/
 backend/target/
 backend/package-lock.json
+telemetry-core/target/
+telemetry-wasm/target/
 frontend/node_modules/
 frontend/dist/
-data/
+frontend/src/wasm/pkg/
+
+!backend/src/meta/data/
+!backend/src/meta/data/*.csv
+
 .env
 .agent/
 .shared/

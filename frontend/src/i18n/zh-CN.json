@@ -62,7 +62,7 @@
     "active": "运行中",
     "inactive": "已关闭",
     "source": "数据源",
-    "defaultPath": "data/demo/demo_race.bin",
+    "defaultPath": "demo/demo_race.bin",
     "start": "启动演示",
     "stop": "停止演示",
     "starting": "启动中...",

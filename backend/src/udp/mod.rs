@@ -14,12 +14,12 @@ use crate::app::{
     DetectCommand, DetectEvent, DetectState, DetectStatus, DetectStore, PacketInfo, RawPacketSnapshot,
     RecordState, UdpConfig,
 };
-use crate::crypto;
 use crate::meta::{self, MetadataStore, TrackDetector};
-use crate::parser;
 use crate::recording::record_raw_packet;
 use crate::telemetry::apply_frame;
 use crate::utils::monotonic_ms;
+use telemetry_core::crypto;
+use telemetry_core::parser;
 
 pub async fn udp_loop(
     udp_port: u16,
@@ -226,7 +226,7 @@ pub async fn udp_loop(
                     last_inspect_log_ms = now_ms;
                     let (session_state, session_index) = {
                         let store = store.read().await;
-                        (store.session_state, store.session_index)
+                        (store.session.session_state, store.session.session_index)
                     };
                     info!(
                         payload_len = payload.len(),
