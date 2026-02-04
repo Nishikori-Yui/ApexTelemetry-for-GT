@@ -74,6 +74,10 @@ npm run dev
 - 构建模式：`npm run build -- --mode pages` 并设置 `VITE_PAGES_DEMO=true`（需要 `wasm-pack`）
 - 页面地址：`https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
+## 数据来源
+- `backend/src/meta/data/cars.csv`、`backend/src/meta/data/maker.csv`、`backend/src/meta/data/course.csv` 来自 `ddm999/gt7info` 的车辆/厂商/赛道数据集。
+- 赛道几何 dumps 来自 GT7Tracks 项目（引用 `ddm999/gt7info` 的赛道 ID 定义及 GTPlanet 论坛采集说明）。这些 dumps 不随仓库提交，请使用 `scripts/fetch_gt7tracks_dumps.sh` 在本地下载。
+
 ## 端口与接口
 - HTTP/WS: `127.0.0.1:10086`
 - 健康检查: `GET /health`
@@ -162,7 +166,8 @@ npm run dev
 - 离开 `IN_RACE` 后样本窗口冻结，不会自动清空。
 
 ## 赛道几何（自带数据）
-赛道几何来自 `GT7Tracks` dumps，**不**提交到本仓库。
+赛道几何来自本地下载的 GT7Tracks dumps（不随仓库提交）。
+- 下载命令：`scripts/fetch_gt7tracks_dumps.sh`
 - 期望路径：`data/vendor/GT7Tracks/dumps/<track_id>.csv`
 - 后端接口 `GET /meta/track/{id}/geometry/svg` 提供归一化 SVG 路径。
 - 如果 dumps 目录缺失，则返回 `exists=false`。

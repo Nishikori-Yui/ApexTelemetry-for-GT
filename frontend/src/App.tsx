@@ -425,6 +425,7 @@ function App() {
         }
 
         setDemoActive(true)
+        demoActiveRef.current = true
         setDemoPath(demoBinUrl)
         pushLog('info', `demo bin loaded frames=${frames.length}`)
         startDemoPlayback(frames)
@@ -514,9 +515,11 @@ function App() {
     if (isPagesDemo) {
       if (demoActive) {
         setDemoActive(false)
+        demoActiveRef.current = false
         stopDemoPlayback()
       } else {
         setDemoActive(true)
+        demoActiveRef.current = true
         if (demoFramesRef.current.length > 0) {
           demoStartRef.current = typeof window !== 'undefined' ? window.performance.now() : null
           demoElapsedRef.current = 0
@@ -879,7 +882,7 @@ function App() {
           ))}
         </nav>
 
-        {activeTab === 'race' && (
+        <div className="tab-panel-container" data-active={activeTab === 'race' ? 'true' : 'false'}>
           <RaceTab
             telemetry={telemetry}
             metaCar={metaCar}
@@ -891,7 +894,7 @@ function App() {
             speedUnit={speedUnit}
             numberFormats={numberFormats}
           />
-        )}
+        </div>
 
         {activeTab === 'tires' && <TiresTab />}
 

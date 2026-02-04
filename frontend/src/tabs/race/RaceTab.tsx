@@ -538,10 +538,10 @@ export function RaceTab({
                 key={sessionKey}
                 className="track-map-svg"
                 trackGeometry={
-                  trackGeometry?.exists && trackGeometry.view_box && trackGeometry.path_d
+                  trackGeometry?.exists && trackGeometry.view_box
                     ? {
                         view_box: trackGeometry.view_box,
-                        path_d: trackGeometry.path_d,
+                        path_d: trackGeometry.path_d ?? '',
                       }
                     : undefined
                 }

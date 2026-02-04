@@ -74,6 +74,10 @@ The repo includes a GitHub Pages demo that runs **entirely in the browser** usin
 - Build mode: `npm run build -- --mode pages` with `VITE_PAGES_DEMO=true` (requires `wasm-pack`)
 - Pages URL: `https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
+## Data Sources
+- `backend/src/meta/data/cars.csv`, `backend/src/meta/data/maker.csv`, and `backend/src/meta/data/course.csv` are derived from the `ddm999/gt7info` datasets (car list, maker list, and course list).
+- Track geometry dumps come from the GT7Tracks project (references `ddm999/gt7info` course IDs and GTPlanet capture notes). The dumps are not stored in this repo; download them locally using `scripts/fetch_gt7tracks_dumps.sh`.
+
 ## Ports and Endpoints
 - HTTP/WS: `127.0.0.1:10086`
 - Health: `GET /health`
@@ -162,7 +166,8 @@ Semantics:
 - When leaving `IN_RACE`, samples freeze at their last window; no auto-clear.
 
 ## Track Geometry (Bring Your Own Data)
-Track geometry is loaded from `GT7Tracks` dumps and is **not** committed to this repo.
+Track geometry is loaded from GT7Tracks dumps downloaded locally (not stored in this repo).
+- Download: `scripts/fetch_gt7tracks_dumps.sh`
 - Expected path: `data/vendor/GT7Tracks/dumps/<track_id>.csv`
 - The backend exposes `GET /meta/track/{id}/geometry/svg` for a normalized SVG path.
 - If the dumps directory is missing, geometry responses return `exists=false`.

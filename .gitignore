@@ -6,6 +6,7 @@ telemetry-wasm/target/
 frontend/node_modules/
 frontend/dist/
 frontend/src/wasm/pkg/
+data/vendor/GT7Tracks/
 
 !backend/src/meta/data/
 !backend/src/meta/data/*.csv

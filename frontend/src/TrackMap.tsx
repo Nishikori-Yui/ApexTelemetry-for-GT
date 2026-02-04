@@ -147,7 +147,7 @@ export const TrackMap: React.FC<TrackMapProps> = ({ currentPos, trackGeometry, c
 
     return (
         <svg className={className} viewBox={finalViewBox} preserveAspectRatio="xMidYMid meet" style={{ overflow: 'hidden' }}>
-            {trackGeometry && (
+            {trackGeometry?.path_d && (
                 <path d={trackGeometry.path_d} fill="none" stroke="#444" strokeWidth="2" vectorEffect="non-scaling-stroke" />
             )}
             <path d={pathD} fill="none" stroke="cyan" strokeWidth="4" vectorEffect="non-scaling-stroke" />
