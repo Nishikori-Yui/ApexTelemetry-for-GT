@@ -167,10 +167,11 @@ npm run dev
 - 离开 `IN_RACE` 后样本窗口冻结，不会自动清空。
 
 ## 赛道几何（自带数据）
-赛道几何来自 `GT7Tracks` dumps，**不**提交到本仓库。
+赛道几何来自本仓库内置的 `GT7Tracks` dumps。
 - 期望路径：`data/vendor/GT7Tracks/dumps/<track_id>.csv`
 - 后端接口 `GET /meta/track/{id}/geometry/svg` 提供归一化 SVG 路径。
 - 如果 dumps 目录缺失，则返回 `exists=false`。
+- 许可说明：当前快照中 `data/vendor/GT7Tracks` 未包含明确的 LICENSE 文件，请在再分发前核对上游 README 与来源信息。
 
 ## Debug 遥测快照
 - `GET /debug/telemetry` 只返回**已解析**字段（不记录原始包日志）。

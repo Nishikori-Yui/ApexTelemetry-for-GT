@@ -167,10 +167,11 @@ Semantics:
 - When leaving `IN_RACE`, samples freeze at their last window; no auto-clear.
 
 ## Track Geometry (Bring Your Own Data)
-Track geometry is loaded from `GT7Tracks` dumps and is **not** committed to this repo.
+Track geometry is loaded from the `GT7Tracks` dumps included in this repo.
 - Expected path: `data/vendor/GT7Tracks/dumps/<track_id>.csv`
 - The backend exposes `GET /meta/track/{id}/geometry/svg` for a normalized SVG path.
 - If the dumps directory is missing, geometry responses return `exists=false`.
+- License note: `data/vendor/GT7Tracks` has no explicit license file in this snapshot; please review the upstream README and source before redistribution.
 
 ## Debug Telemetry Snapshot
 - `GET /debug/telemetry` returns **parsed** fields only (no raw UDP logs).
