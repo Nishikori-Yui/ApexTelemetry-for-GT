@@ -75,9 +75,8 @@ npm run dev
 - 页面地址：`https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
 ## 数据来源
-- `data/vendor/GT7Tracks` 来自 GT7Tracks 的赛道采集工具（详情见 `data/vendor/GT7Tracks/README.md`）。
-- 赛道 ID/名称参考该 README 中提到的 `ddm999/gt7info` 项目的 `course.csv` 数据集。
-- 赛道采集流程的讨论来源也在该 README 引用的 GTPlanet 论坛帖子中说明。
+- `backend/src/meta/data/cars.csv`、`backend/src/meta/data/maker.csv`、`backend/src/meta/data/course.csv` 来自 `ddm999/gt7info` 的车辆/厂商/赛道数据集。
+- `data/vendor/GT7Tracks` 来自 GT7Tracks 的赛道采集工具（详情见 `data/vendor/GT7Tracks/README.md`），其中引用了 `ddm999/gt7info` 的赛道 ID 定义以及 GTPlanet 论坛的采集说明。
 
 ## 端口与接口
 - HTTP/WS: `127.0.0.1:10086`
@@ -171,7 +170,6 @@ npm run dev
 - 期望路径：`data/vendor/GT7Tracks/dumps/<track_id>.csv`
 - 后端接口 `GET /meta/track/{id}/geometry/svg` 提供归一化 SVG 路径。
 - 如果 dumps 目录缺失，则返回 `exists=false`。
-- 许可说明：当前快照中 `data/vendor/GT7Tracks` 未包含明确的 LICENSE 文件，请在再分发前核对上游 README 与来源信息。
 
 ## Debug 遥测快照
 - `GET /debug/telemetry` 只返回**已解析**字段（不记录原始包日志）。

@@ -75,9 +75,8 @@ The repo includes a GitHub Pages demo that runs **entirely in the browser** usin
 - Pages URL: `https://Nishikori-Yui.github.io/ApexTelemetry-for-GT/`
 
 ## Data Sources
-- `data/vendor/GT7Tracks` is sourced from the GT7 track capture tool by the GT7Tracks project (see `data/vendor/GT7Tracks/README.md`).
-- Track IDs/names reference the `course.csv` dataset from the `ddm999/gt7info` project as noted in that README.
-- Additional discussion of the track capture process is referenced from the GTPlanet forum thread cited in that README.
+- `backend/src/meta/data/cars.csv`, `backend/src/meta/data/maker.csv`, and `backend/src/meta/data/course.csv` are derived from the `ddm999/gt7info` datasets (car list, maker list, and course list).
+- `data/vendor/GT7Tracks` is sourced from the GT7 track capture tool by the GT7Tracks project (see `data/vendor/GT7Tracks/README.md`), which references `ddm999/gt7info` course IDs and a GTPlanet forum thread for capture notes.
 
 ## Ports and Endpoints
 - HTTP/WS: `127.0.0.1:10086`
@@ -171,7 +170,6 @@ Track geometry is loaded from the `GT7Tracks` dumps included in this repo.
 - Expected path: `data/vendor/GT7Tracks/dumps/<track_id>.csv`
 - The backend exposes `GET /meta/track/{id}/geometry/svg` for a normalized SVG path.
 - If the dumps directory is missing, geometry responses return `exists=false`.
-- License note: `data/vendor/GT7Tracks` has no explicit license file in this snapshot; please review the upstream README and source before redistribution.
 
 ## Debug Telemetry Snapshot
 - `GET /debug/telemetry` returns **parsed** fields only (no raw UDP logs).
